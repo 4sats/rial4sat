@@ -47,7 +47,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Stages
-START_ROUTES, END_ROUTES = range(2)
+START_ROUTES, LIGHTNING = range(2)
 # Callback data
 ONE, TWO, THREE, FOUR = range(4)
 
