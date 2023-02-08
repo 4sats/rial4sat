@@ -117,11 +117,7 @@ async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
-    query = update.callback_query
-    await query.answer()
-    await query.edit_message_text(
-        text="Second CallbackQueryHandler, Choose a route"
-    )
+    await update.message.reply_text("ok")
     return LIGHTNING
 
 
