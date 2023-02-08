@@ -188,7 +188,7 @@ def main() -> None:
                 CallbackQueryHandler(lightning1, pattern="lightning1"),
             ],
             LIGHTNING: [
-                MessageHandler(filters=filters.Regex("^\d+$"))
+                MessageHandler(filters=filters.Regex("^\d+$"), callback=lightning2)
             ],
         },
         fallbacks=[CommandHandler("start", start)],
