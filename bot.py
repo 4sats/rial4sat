@@ -117,7 +117,8 @@ async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
-    await update.message.reply_text("ok")
+    amount = update.message.text
+    await update.message.reply_text("ok "+str(amount))
     return LIGHTNING
 
 
