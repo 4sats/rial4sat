@@ -36,6 +36,8 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
     ConversationHandler,
+    MessageHandler,
+    filters
 )
 
 # Enable logging
@@ -61,13 +63,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # a list (hence `[[...]]`).
     keyboard = [
         [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
+            InlineKeyboardButton("آنچین", callback_data="onchain")
+            
+        ],
+        [
+            InlineKeyboardButton("لایتنینگ⚡️", callback_data="lightning1")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
-    await update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
+    await update.message.reply_text("سلام با بات ما میتونی بیتکوینتو درجا به ریال تبدیل کنی بدون نیاز به احراز هویت\n برای شروع آنچین یا لایتنینگ رو انتخاب کنید", reply_markup=reply_markup)
     # Tell ConversationHandler that we're in state `FIRST` now
     return START_ROUTES
 
@@ -93,7 +98,7 @@ async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return START_ROUTES
 
 
-async def one(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     query = update.callback_query
     await query.answer()
@@ -105,26 +110,19 @@ async def one(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
-        text="First CallbackQueryHandler, Choose a route", reply_markup=reply_markup
+        text="لطف کنید میزان ساتوشی واریزیتونو برام بفرستین:(مثال: 1000)", reply_markup=reply_markup
     )
-    return START_ROUTES
+    return LIGHTNING
 
 
-async def two(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     query = update.callback_query
     await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("3", callback_data=str(THREE)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
-        text="Second CallbackQueryHandler, Choose a route", reply_markup=reply_markup
+        text="Second CallbackQueryHandler, Choose a route"
     )
-    return START_ROUTES
+    return LIGHTNING
 
 
 async def three(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -187,14 +185,10 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             START_ROUTES: [
-                CallbackQueryHandler(one, pattern="^" + str(ONE) + "$"),
-                CallbackQueryHandler(two, pattern="^" + str(TWO) + "$"),
-                CallbackQueryHandler(three, pattern="^" + str(THREE) + "$"),
-                CallbackQueryHandler(four, pattern="^" + str(FOUR) + "$"),
+                CallbackQueryHandler(lightning1, pattern="lightning1"),
             ],
-            END_ROUTES: [
-                CallbackQueryHandler(start_over, pattern="^" + str(ONE) + "$"),
-                CallbackQueryHandler(end, pattern="^" + str(TWO) + "$"),
+            LIGHTNING: [
+                MessageHandler(filters=filters.Regex(@"^\d+$"))
             ],
         },
         fallbacks=[CommandHandler("start", start)],
