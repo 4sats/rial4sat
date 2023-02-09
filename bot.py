@@ -14,7 +14,7 @@ ConversationHandler.
 Send /start to initiate the conversation.
 Press Ctrl-C on the command line to stop the bot.
 """
-import logging, config
+import logging, config, requests
 
 from telegram import __version__ as TG_VER
 
@@ -111,9 +111,26 @@ async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     amount = update.message.text
-    await update.message.reply_text("ok "+str(amount))
+    data = {"out": False, "amount": int(amount), "memo": str(update.user.id)}
+    x = requests.post("https://legend.lnbits.com/api/v1/payments", data=data, headers = {"X-Api-Key": "bb92d7e07f3e41f89302b6ec3d3b507b", "Content-type": "application/json"})
+
+    keyboard = [
+        [
+            InlineKeyboardButton("پرداخت کردم", callback_data=str("ln"+x.json()["payment_hash"])),
+        ]
+    ]
+
+    await update.message.reply_text(x.json()["payment_request"])
     return LIGHTNING
 
+async def lightning3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Show new choice of buttons"""
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(
+        text="پرداخت انجام شد! حالا لطف کنید شماره کارت مد نظر را برای ما بفرستید:"
+    )
+    return CARD
 
 async def three(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons. This is the end point of the conversation."""
@@ -178,10 +195,11 @@ def main() -> None:
                 CallbackQueryHandler(lightning1, pattern="lightning1"),
             ],
             LIGHTNING: [
-                MessageHandler(filters=filters.Regex("^\d+$"), callback=lightning2)
+                MessageHandler(filters=filters.Regex("^\d+$"), callback=lightning2),
+                CallbackQueryHandler(lightning3, pattern="^ln"),
             ],
             CARD: [
-
+                
             ]
         },
         fallbacks=[CommandHandler("start", start)],
