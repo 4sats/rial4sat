@@ -47,7 +47,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Stages
-START_ROUTES, LIGHTNING = range(2)
+START_ROUTES, LIGHTNING, ONCHAIN, CARD = range(4)
 # Callback data
 ONE, TWO, THREE, FOUR = range(4)
 
@@ -102,15 +102,8 @@ async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     query = update.callback_query
     await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("3", callback_data=str(THREE)),
-            InlineKeyboardButton("4", callback_data=str(FOUR)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
-        text="لطف کنید میزان ساتوشی واریزیتونو برام بفرستین:(مثال: 1000)", reply_markup=reply_markup
+        text="لطف کنید میزان ساتوشی واریزیتونو برام بفرستین:(مثال: 1000)"
     )
     return LIGHTNING
 
@@ -187,6 +180,9 @@ def main() -> None:
             LIGHTNING: [
                 MessageHandler(filters=filters.Regex("^\d+$"), callback=lightning2)
             ],
+            CARD: [
+
+            ]
         },
         fallbacks=[CommandHandler("start", start)],
     )
