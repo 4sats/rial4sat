@@ -113,7 +113,7 @@ async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     amount = update.message.text
     data = {"out": False, "amount": int(amount), "memo": str(update.effective_user.id)}
     x = requests.post("https://legend.lnbits.com/api/v1/payments", data=data, headers = {"X-Api-Key": "bb92d7e07f3e41f89302b6ec3d3b507b", "Content-type": "application/json"})
-
+    print(x.text)
     keyboard = [
         [
             InlineKeyboardButton("پرداخت کردم", callback_data=str("ln"+x.json()["payment_hash"])),
