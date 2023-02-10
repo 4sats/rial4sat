@@ -119,8 +119,8 @@ async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             InlineKeyboardButton("پرداخت کردم", callback_data=str("ln"+x.json()["payment_hash"])),
         ]
     ]
-
-    await update.message.reply_text(x.json()["payment_request"])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(x.json()["payment_request"],reply_markup=reply_markup)
     return LIGHTNING
 
 async def lightning3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
