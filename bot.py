@@ -112,7 +112,7 @@ async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     amount = update.message.text
     data = {"out": False, "amount": int(amount), "memo": str(update.effective_user.id)}
-    x = requests.post("https://legend.lnbits.com/api/v1/payments", data='{"out": False, "amount": '+str(amount)+', "memo": "'+str(update.effective_user.id)+'"}', headers = {"X-Api-Key": "'+config.READ_KEY+'", "Content-type": "application/json"})
+    x = requests.post("https://legend.lnbits.com/api/v1/payments", data='{"out": false, "amount": '+str(amount)+', "memo": "'+str(update.effective_user.id)+'"}', headers = {"X-Api-Key": "'+config.READ_KEY+'", "Content-type": "application/json"})
     print(x.text)
     keyboard = [
         [
