@@ -77,27 +77,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return START_ROUTES
 
 
-async def start_over(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Prompt same text & keyboard as `start` does but not as new message"""
-    # Get CallbackQuery from Update
-    query = update.callback_query
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    # Instead of sending a new message, edit the message that
-    # originated the CallbackQuery. This gives the feeling of an
-    # interactive menu.
-    await query.edit_message_text(text="Start handler, Choose a route", reply_markup=reply_markup)
-    return START_ROUTES
-
-
 async def lightning1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     query = update.callback_query
@@ -131,50 +110,6 @@ async def lightning3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         text="پرداخت انجام شد! حالا لطف کنید شماره کارت مد نظر را برای ما بفرستید:"
     )
     return CARD
-
-async def three(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Show new choice of buttons. This is the end point of the conversation."""
-    query = update.callback_query
-    await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("Yes, let's do it again!", callback_data=str(ONE)),
-            InlineKeyboardButton("Nah, I've had enough ...", callback_data=str(TWO)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(
-        text="Third CallbackQueryHandler. Do want to start over?", reply_markup=reply_markup
-    )
-    # Transfer to conversation state `SECOND`
-    return END_ROUTES
-
-
-async def four(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Show new choice of buttons"""
-    query = update.callback_query
-    await query.answer()
-    keyboard = [
-        [
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-            InlineKeyboardButton("3", callback_data=str(THREE)),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(
-        text="Fourth CallbackQueryHandler, Choose a route", reply_markup=reply_markup
-    )
-    return START_ROUTES
-
-
-async def end(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Returns `ConversationHandler.END`, which tells the
-    ConversationHandler that the conversation is over.
-    """
-    query = update.callback_query
-    await query.answer()
-    await query.edit_message_text(text="See you next time!")
-    return ConversationHandler.END
 
 
 def main() -> None:
