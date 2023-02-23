@@ -14,7 +14,7 @@ ConversationHandler.
 Send /start to initiate the conversation.
 Press Ctrl-C on the command line to stop the bot.
 """
-import logging, config, requests
+import logging, config, requests, aiohttp
 
 from telegram import __version__ as TG_VER
 
@@ -91,15 +91,18 @@ async def lightning2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show new choice of buttons"""
     amount = update.message.text
     data = {"out": False, "amount": int(amount), "memo": str(update.effective_user.id)}
-    x = await requests.post("https://legend.lnbits.com/api/v1/payments", data='{"out": false, "amount": '+str(amount)+', "memo": "'+str(update.effective_user.id)+'"}', headers = {"X-Api-Key": config.READ_KEY, "Content-type": "application/json"})
-    print(x.text)
-    keyboard = [
-        [
-            InlineKeyboardButton("پرداخت کردم", callback_data=str("ln"+x.json()["payment_hash"])),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(x.json()["payment_request"],reply_markup=reply_markup)
+    #x = requests.post("https://legend.lnbits.com/api/v1/payments", data='{"out": false, "amount": '+str(amount)+', "memo": "'+str(update.effective_user.id)+'"}', headers = {"X-Api-Key": config.READ_KEY, "Content-type": "application/json"})
+    timeout = aiohttp.ClientTimeout(total=10)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.post("https://legend.lnbits.com/api/v1/payments", data='{"out": false, "amount": '+str(amount)+', "memo": "'+str(update.effective_user.id)+'"}', headers = {"X-Api-Key": config.READ_KEY, "Content-type": "application/json"}) as x:
+            print(x.text)
+            keyboard = [
+                [
+                    InlineKeyboardButton("پرداخت کردم", callback_data=str("ln"+x.json()["payment_hash"])),
+                ]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.message.reply_text(x.json()["payment_request"],reply_markup=reply_markup)
     return LIGHTNING
 
 async def lightning3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
